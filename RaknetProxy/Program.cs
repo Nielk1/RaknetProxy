@@ -232,6 +232,14 @@ namespace RaknetProxy
                     request.Timeout = host.timeout;
                     request.Method = "DELETE";
 
+                    if (context.Request.ContentLength64 > 0)
+                    {
+                        request.ContentLength = context.Request.ContentLength64;
+                        Stream postData = request.GetRequestStream();
+                        context.Request.InputStream.CopyTo(postData);
+                        postData.Close();
+                    }
+
                     using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                     {
                         using (Stream responseStream = response.GetResponseStream())
@@ -244,7 +252,6 @@ namespace RaknetProxy
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("Success");
                     Console.ForegroundColor = tmpCol;
-                    return;
                 }
                 catch (Exception ex)
                 {
